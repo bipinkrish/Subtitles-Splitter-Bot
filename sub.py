@@ -5,7 +5,7 @@ import splitter
 import os
 from os.path import exists
 
-TOKEN=os.environ("TOKEN")
+TOKEN=os.environ.get("TOKEN", "")  
 bot = telebot.TeleBot(TOKEN)
 
 def splitfn(name,capt,message):
