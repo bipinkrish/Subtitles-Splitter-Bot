@@ -1,8 +1,0 @@
-telebot
-pyTelegramBotAPI
-py-cpuinfo
-logzero
-zipfile36
-freeport==0.1.9
-psutil
-docker
