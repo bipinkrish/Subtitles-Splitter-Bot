@@ -14,6 +14,6 @@ RUN apt install axel
 RUN apt install p7zip-full
 
 COPY requirements.txt requirements.txt
-
+COPY test.py test.py
 CMD ["pip install -r requirements.txt"]
 CMD ["python3 test.py"]
