@@ -7,7 +7,7 @@ RUN apt-get -qqy update \
     && apt-get autoclean \
     && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
-    && apt install pip
+RUN apt install pip
     && apt install docker
     && apt install docker.io
     && apt install axel
