@@ -2,4 +2,4 @@ DateTime
 pydantic
 moviepy
 telebot
-pyTelegramBotApi
+pyTelegramBotAPI
