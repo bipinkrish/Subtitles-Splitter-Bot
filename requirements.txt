@@ -3,3 +3,4 @@ pydantic
 moviepy
 telebot
 pyTelegramBotAPI
+rich
