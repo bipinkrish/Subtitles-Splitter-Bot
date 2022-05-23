@@ -1,0 +1,9 @@
+telebot
+pyTelegramBotAPI
+py-cpuinfo
+logzero
+zipfile36
+speedtest-cli
+freeport==0.1.9
+psutil
+docker
