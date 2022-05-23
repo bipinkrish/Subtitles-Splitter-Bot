@@ -8,10 +8,10 @@ RUN apt-get -qqy update \
     && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 RUN apt install pip
-    && apt install docker
-    && apt install docker.io
-    && apt install axel
-    && apt install p7zip-full
+RUN apt install docker
+RUN apt install docker.io
+RUN apt install axel
+RUN apt install p7zip-full
     
 RUN  mkdir -p /var/run/supervisor /var/log/supervisor \
     && chmod -R 777 /opt/bin/ /var/run/supervisor /var/log/supervisor /etc/passwd \
