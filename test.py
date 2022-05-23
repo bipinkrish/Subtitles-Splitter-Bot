@@ -28,10 +28,7 @@ def handle_commands(message):
         with open(find,"r") as cmd:
                 out = cmd.read()
         bot.send_message(message.chat.id,out)
-        try:
-            os.remove("cmd.txt")
-        except:
-            os.remove("find.txt")
-            os.remove(find)
+        os.remove("find.txt")
+        os.remove(find)
 
 bot.polling(none_stop=True, timeout=123)            
