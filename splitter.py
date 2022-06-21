@@ -2,7 +2,7 @@ import datetime
 from io import TextIOWrapper
 from typing import List
 from pydantic import BaseModel
-from rich import print
+from  rich import print
 from moviepy.editor import VideoFileClip
 
 FORMAT = """{}\n{} --> {}\n{}\n"""
@@ -20,17 +20,17 @@ class subtitles:
         self.subtitle :List[Subtitles]= []
         self.segments = -1
         self.video_duration = 0
-        self.doIt()
+        self.subtitle_box=0
+        self.setup()
 
-    def doIt(self):
-        with open(self.filename, 'r') as f:
+    def setup(self):
+        with open(self.filename, 'r',encoding='utf-8') as f:
             while True:
                 self.subtitle.append(self.scrape(f))
                 self.segments+=1
                 if (self.subtitle[self.segments]==None):
                     self.subtitle.pop()
                     break
-
 
     @staticmethod
     def getStartTime(subtitle_time: str):
@@ -61,11 +61,16 @@ class subtitles:
             if (line != "\n"):
                 break
         if line == None:
-                return None
+            return None
 
-        count = int(line.strip())
+        try :
+            count =int(line.strip())
+        except:
+            raise Exception("Invalid SRT format.")
+
         start_time , end_time = self.getStartEndTime(file_ptr.readline())
         text = self.readSubtitle(file_ptr)
+        self.subtitle_box = count
         return Subtitles(count=count, start_time=start_time, end_time=end_time,text=text)
 
     def write(self,filename:str):
@@ -81,20 +86,32 @@ class subtitles:
     
         return datetime1 - datetime2
 
+    @staticmethod
+    def addzero(number, digit=2):
+        number = str(number)
+        while len(number) != digit:
+            number = "0" + number
+        return number
+
+
+    def get_time(self,data:datetime.timedelta):
+        time_d = self.convert(data.seconds)
+        return f"{self.addzero(time_d.hour)}:{self.addzero(time_d.minute)}:{self.addzero(time_d.second)},{self.addzero(str(time_d.microsecond)[0:3],digit=3)}"
 
     def write_subtitle(self,obj:Subtitles,offset=datetime.time(),file_ptr:TextIOWrapper=None,count=0,resetNumbers:bool=False):
-        s= str(self.find_offset(obj.start_time,offset))
-        e =str(self.find_offset(obj.end_time,offset))
-        file_ptr.write(FORMAT.format(next(count) if resetNumbers else obj.count ,s[:-6]+s[-3:],e[:-6]+e[-3:],obj.text))
+        s=self.find_offset(obj.start_time,offset)
+        e=self.find_offset(obj.end_time,offset)
+        
+        file_ptr.write(FORMAT.format(next(count) if resetNumbers else obj.count ,self.get_time(s),self.get_time(e),obj.text))
 
 
-    def split(self,split_time:datetime.time,split_file_1:str,split_file_2:str,resetNumbers:bool=False,reWriteTime:datetime.time=datetime.time()):
+    def split(self,split_time:datetime.time,split_file_1:str='./split_1.srt',split_file_2:str="./split_2.srt",resetNumbers:bool=False,reWriteTime:datetime.time=datetime.time()):
         flag= 0
         offset_flag =0
         with open(split_file_1,"w") as file:
             while 1:
                 
-                if self.subtitle[flag].start_time > split_time:
+                if flag==self.subtitle_box or (self.subtitle[flag].start_time > self.convert(int(self.find_offset(split_time,reWriteTime).total_seconds()))):
                     break
                 self.write_subtitle(obj=self.subtitle[flag],file_ptr=file)
                 
@@ -103,18 +120,15 @@ class subtitles:
                 flag+=1
 
         split_time =self.convert(int(self.find_offset(split_time,reWriteTime).total_seconds()))
-
         flag =flag-offset_flag
-      
         count_range =iter(range(1,self.segments-flag+2))
         with open(split_file_2,"w") as file:
                 for i in range(flag,self.segments):
-                    #print(self.subtitle[i])
                     self.write_subtitle(obj=self.subtitle[i],file_ptr=file,resetNumbers=resetNumbers,count=count_range,offset=split_time)
+    
     @staticmethod
     def getvideoduration(filename):
         return int(VideoFileClip(filename).duration)
-
 
     @staticmethod
     def convert(seconds):
@@ -128,5 +142,3 @@ class subtitles:
     def split_by_video(self,filename,split_file_1:str,split_file_2:str,resetNumbers:bool=False,reWriteTime:datetime.time=datetime.time()):
         split_time = self.convert(self.getvideoduration(filename))
         self.split(split_time,split_file_1,split_file_2,resetNumbers,reWriteTime)
-
-       
