@@ -8,7 +8,7 @@ Inspired from https://github.com/Brijeshkrishna/pysubtitle
 
 ## Variables
 
-- `BOT_TOKEN` Your bot token from @BotFather
+- `TOKEN` Your bot token from @BotFather
 
 ---
 
